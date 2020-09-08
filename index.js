@@ -68,7 +68,9 @@ export default class ImageEdit extends Component {
     width: 0,
     height: 0,
     x: 0,
-    y: 0
+    y: 0,
+    originalWidth: 0,
+    originalHeight: 0,
   };
 
   constructor(props) {
@@ -104,7 +106,7 @@ export default class ImageEdit extends Component {
         onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
         onMoveShouldSetPanResponder: (evt, gestureState) => true,
         onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-        onPanResponderGrant: (evt, gestureState) => {},
+        onPanResponderGrant: (evt, gestureState) => this.onStartMove.bind(this),
         onPanResponderMove: this.onMove.bind(this),
         onPanResponderTerminationRequest: (evt, gestureState) => true,
         onPanResponderRelease: this.onRelease.bind(this),
@@ -227,6 +229,8 @@ export default class ImageEdit extends Component {
       ext = ext[ext.length-1];
       let type = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "heic"].includes(ext) || (image.mime && /image/.test(image.mime)) ? 'image' : 'video';
       image.type = type;
+      image.originalHeight = image.height;
+      image.originalWidth = image.width;
 
       if(image.width && image.height && (!info.scaled || (info.scaled && !hasDimensions))){
         let sd = ImageEdit.scaledDimensions({width: w, height: h}, {width: image.width, height: image.height});
@@ -271,7 +275,16 @@ export default class ImageEdit extends Component {
   onRelease(e) {
     if (!this.state.editing) return;
     this.setState({ isPinching: false, isMoving: false });
+    if (this.props.onRelease) {
+      this.props.onRelease();
+    }
     this.distance = 0;
+  }
+
+  onStartMove(e, gestureState) {
+    if (this.props.onStartMoving) {
+      this.props.onStartMoving();
+    }
   }
 
   onMove(e, gestureState) {
@@ -360,6 +373,9 @@ export default class ImageEdit extends Component {
           }
         });
       } else {
+        if (this.props.onStartMoving) {
+          this.props.onStartMoving();
+        }
         this.initX = this.state.image.x;
         this.initY = this.state.image.y;
         this.setState({ isMoving: true });
