@@ -305,10 +305,11 @@ export default class ImageEdit extends Component {
 
       if (this.state.isPinching) {
         this.distance = dist - this.initDistance;
+        this.proportionalHeightDistance = this.distance * (this.initH / this.initW);
         info.image = {
           ...this.state.image,
           width: this.initW + this.distance,
-          height: this.initH + this.distance
+          height: this.initH + this.proportionalHeightDistance
         };
 
         if (!this.state.cropIn) {
