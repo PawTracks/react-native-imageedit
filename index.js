@@ -193,6 +193,8 @@ export default class ImageEdit extends Component {
     let info = {},
         w = props.width || WW,
         h = props.height || WW,
+        x = props.offsetX || ImageEdit.imageDefaults.x,
+        y = props.offsetY || ImageEdit.imageDefaults.y,
         image = typeof props.image == "object" ? props.image : (props.image ? { ...ImageEdit.imageDefaults, uri: props.image} : null)
 
     if (typeof props.width != 'undefined' || !state.image.width) info.width = w;
@@ -207,8 +209,8 @@ export default class ImageEdit extends Component {
     else info.scaled = state.scaled;
 
     if (image && image.uri != state.image.uri){
-      image.x = image.x || 0;
-      image.y = image.y || 0;
+      image.x = x || 0;
+      image.y = y || 0;
       let hasDimensions = true;
       if(!image.width && !image.height){
         hasDimensions = false;
